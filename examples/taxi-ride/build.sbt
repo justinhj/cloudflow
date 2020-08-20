@@ -2,6 +2,8 @@ import sbt._
 import sbt.Keys._
 import cloudflow.sbt.CommonSettingsAndTasksPlugin._
 
+libraryDependencies += "org.apache.flink" % "flink-azure-fs-hadoop" % "1.11.1"
+
 lazy val root =
   Project(id = "root", base = file("."))
     .enablePlugins(ScalafmtPlugin)
@@ -25,6 +27,9 @@ lazy val taxiRidePipeline = appModule("taxi-ride-pipeline")
   .settings(commonSettings)
   .settings(
     name := "taxi-ride-fare"
+  )
+  .settings(
+      runLocalConfigFile := Some("processor/src/main/resources/minikube.conf")
   )
 
 lazy val datamodel = appModule("datamodel")
@@ -57,6 +62,14 @@ lazy val processor = appModule("processor")
   )
   .settings(
     parallelExecution in Test := false
+  )
+  .settings(
+    extraDockerInstructions ++= Seq(
+      sbtdocker.Instructions.User("root"),
+      sbtdocker.Instructions.Run("mkdir -p ./plugins/azure-fs-hadoop"),
+      sbtdocker.Instructions.Run("cp /opt/flink/opt/flink-azure-fs-hadoop-1.10.0.jar ./plugins/azure-fs-hadoop/"),
+      sbtdocker.Instructions.Run("chown -R flink:flink ./plugins/azure-fs-hadoop"))
+
   )
   .dependsOn(datamodel)
 
