@@ -41,6 +41,7 @@ import cloudflow.streamlets.StreamletShape
 import cloudflow.streamlets.avro._
 import taxiride.datamodel._
 import cloudflow.flink._
+import java.io.FileOutputStream
 
 class TaxiRideProcessor extends FlinkStreamlet {
 
@@ -55,9 +56,23 @@ class TaxiRideProcessor extends FlinkStreamlet {
   //         has 2 inlets and 1 outlet
   @transient val shape = StreamletShape.withInlets(inTaxiRide, inTaxiFare).withOutlets(out)
 
+  override def createExecutionEnvironment: StreamExecutionEnvironment = {
+    val enabled = StreamExecutionEnvironment.getExecutionEnvironment.getJavaEnv.isChainingEnabled()
+    val mode = StreamExecutionEnvironment.getExecutionEnvironment.getCheckpointingMode.toString()
+    val out = new FileOutputStream("/tmp/debugconfig.txt")
+
+    //val backend = StreamExecutionEnvironment.getExecutionEnvironment.getStateBackend.toString()
+
+    out.write(s"is checkpoint enabled? $enabled mode $mode".getBytes())
+    out.close
+
+    super.createExecutionEnvironment
+  }
+
   // Step 3: Provide custom implementation of `FlinkStreamletLogic` that defines
   //         the behavior of the streamlet
   override def createLogic() = new FlinkStreamletLogic {
+
     override def buildExecutionGraph = {
       val rides: DataStream[TaxiRide] =
         readStream(inTaxiRide)

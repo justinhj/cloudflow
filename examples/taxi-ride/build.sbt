@@ -29,7 +29,7 @@ lazy val taxiRidePipeline = appModule("taxi-ride-pipeline")
     name := "taxi-ride-fare"
   )
   .settings(
-      runLocalConfigFile := Some("processor/src/main/resources/minikube.conf")
+      runLocalConfigFile := Some("processor/src/main/resources/azuretest.conf")
   )
 
 lazy val datamodel = appModule("datamodel")
