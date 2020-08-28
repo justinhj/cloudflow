@@ -4,6 +4,18 @@ import Library._
 import sbtdocker.Instructions
 import sbtrelease.ReleaseStateTransformations._
 
+val javadocDisabledFor = Set(
+  // link to URL is not correctly mapped by genjavadoc (https://github.com/lightbend/genjavadoc/issues/43#issuecomment-60261931)
+  "/cloudflow-streamlets/target/java/cloudflow/streamlets/RegExpConfigParameter$.java",
+  "/cloudflow-streamlets/target/java/cloudflow/streamlets/DurationConfigParameter$.java",
+  "/cloudflow-streamlets/target/java/cloudflow/streamlets/MemorySizeConfigParameter$.java",
+
+  // '@throws' in scaladoc but there is now 'throws' clause on the method
+  "/cloudflow-streamlets/target/java/cloudflow/streamlets/StreamletContext.java",
+  "/cloudflow-akka/target/java/cloudflow/akkastream/AkkaStreamletLogic.java",
+  "/cloudflow-spark/target/java/cloudflow/spark/SparkStreamletLogic.java",
+)
+
 lazy val root =
   Project(id = "root", base = file("."))
     .enablePlugins(ScalaUnidocPlugin, JavaUnidocPlugin, ScalafmtPlugin)
@@ -12,6 +24,9 @@ lazy val root =
       skip in publish := true,
       scalafmtOnCompile := true,
       commands += InternalReleaseCommand.command,
+      unidocAllSources in (JavaUnidoc, unidoc) ~= { v =>
+        v.map(_.filterNot(f => javadocDisabledFor.exists(f.getAbsolutePath.endsWith(_))))
+      },
       unidocProjectFilter in (ScalaUnidoc, unidoc) := inProjects(
             streamlets,
             akkastream,
@@ -84,6 +99,8 @@ lazy val akkastream =
       libraryDependencies ++= Vector(
             AkkaStream,
             AkkaStreamKafka,
+            AkkaStreamKafaSharding,
+            AkkaShardingTyped,
             AkkaCluster,
             AkkaManagement,
             AkkaHttp,
@@ -315,7 +332,7 @@ lazy val plugin =
       crossSbtVersions := Vector("1.2.8"),
       buildInfoKeys := Seq[BuildInfoKey](version),
       buildInfoPackage := "cloudflow.sbt",
-      addSbtPlugin("se.marcuslonnberg" % "sbt-docker"          % "1.6.0"),
+      addSbtPlugin("se.marcuslonnberg" % "sbt-docker"          % "1.8.0"),
       addSbtPlugin("com.typesafe.sbt"  % "sbt-native-packager" % "1.3.25"),
       addSbtPlugin("com.cavorite"      % "sbt-avro-1-8"        % "1.1.9"),
       addSbtPlugin("com.thesamet"      % "sbt-protoc"          % "0.99.31"),
@@ -393,8 +410,8 @@ lazy val operator =
             Skuber,
             ScalaTest,
             AkkaStreamTestkitOperator % "test",
-            ScalaCheck        % "test",
-            Avro4sJson        % "test"
+            ScalaCheck                % "test",
+            Avro4sJson                % "test"
           )
     )
     .settings(
@@ -408,7 +425,7 @@ lazy val operator =
       // skuber version 2.4.0 depends on akka-http 10.1.9 : hence overriding
       // with akka-http 10.1.12 to use akka 2.6
       // remove this override once skuber is updated
-      dependencyOverrides += AkkaHttp,
+      dependencyOverrides += AkkaHttpOperator,
       buildOptions in docker := BuildOptions(
             cache = true,
             removeIntermediateContainers = BuildOptions.Remove.OnSuccess,
@@ -434,8 +451,7 @@ lazy val operator =
           from("adoptopenjdk/openjdk8:alpine")
           entryPoint(s"$targetDir/bin/${executableScriptName.value}")
           copy(appDir, targetDir, chown = "daemon:daemon")
-          addInstruction(
-            Instructions.Run("apk add bash; \\"))
+          addInstruction(Instructions.Run("apk add bash; \\"))
         }
       },
       Test / fork := true,
@@ -532,6 +548,7 @@ lazy val commonSettings = bintraySettings ++ Seq(
               "-language:_",
               "-unchecked"
             ),
+        resolvers += Resolver.url("cloudflow", url("https://lightbend.bintray.com/cloudflow"))(Resolver.ivyStylePatterns),
         resolvers += "Akka Snapshots".at("https://repo.akka.io/snapshots/"),
         scalacOptions in (Compile, console) := (scalacOptions in (Global)).value.filter(_ == "-Ywarn-unused-import"),
         scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value

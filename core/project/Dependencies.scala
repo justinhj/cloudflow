@@ -4,16 +4,18 @@ import sbt._
 object Version {
 
   val Akka          = "2.6.6"
-  val AkkaHttp      = "10.1.12"
+  val AkkaHttp      = "10.2.0"
   val AkkaMgmt      = "1.0.8"
-  val AlpakkaKafka  = "2.0.3"
+  val AlpakkaKafka  = "2.0.4"
   val Scala         = "2.12.11"
   val Spark         = "2.4.5"
   val Flink         = "1.10.0"
   val EmbeddedKafka = "2.5.0" 
-  // skuber depends on 2.5.29
-  val AkkaOperator  = "2.5.29"
 
+  // We've postponed updating Akka and Akka HTTP for the operator
+  // because of https://github.com/lightbend/cloudflow/issues/610
+  val AkkaOperator     = "2.5.29"
+  val AkkaHttpOperator = "10.1.12"
 }
 
 object Library {
@@ -22,16 +24,19 @@ object Library {
   val AkkaHttpJackson        = "com.typesafe.akka"  %% "akka-http-jackson"         % Version.AkkaHttp
   val AkkaHttpSprayJson      = "com.typesafe.akka"  %% "akka-http-spray-json"      % Version.AkkaHttp
   val AkkaActor              = "com.typesafe.akka"  %% "akka-actor"                % Version.Akka
+  val AkkaShardingTyped      = "com.typesafe.akka"  %% "akka-cluster-sharding-typed"% Version.Akka
   val AkkaStream             = "com.typesafe.akka"  %% "akka-stream"               % Version.Akka
   val AkkaSlf4j              = "com.typesafe.akka"  %% "akka-slf4j"                % Version.Akka
   val AkkaStreamContrib      = "com.typesafe.akka"  %% "akka-stream-contrib"       % "0.10"
   val AkkaStreamKafka        = ("com.typesafe.akka" %% "akka-stream-kafka"         % Version.AlpakkaKafka) .exclude("com.fasterxml.jackson.core","jackson-databind") .exclude("com.fasterxml.jackson.module", "jackson-module-scala")
+  val AkkaStreamKafaSharding = "com.typesafe.akka"  %% "akka-stream-kafka-cluster-sharding" % Version.AlpakkaKafka
   val AkkaStreamKafkaTestkit = ("com.typesafe.akka" %% "akka-stream-kafka-testkit" % Version.AlpakkaKafka) .exclude("com.typesafe.akka", "akka-stream-testkit")
   val AkkaStreamTestkit      = "com.typesafe.akka"  %% "akka-stream-testkit"       % Version.Akka
   
   val AkkaSlf4jOperator         = "com.typesafe.akka" %% "akka-slf4j"                % Version.AkkaOperator
   val AkkaStreamOperator        = "com.typesafe.akka" %% "akka-stream"               % Version.AkkaOperator
   val AkkaStreamTestkitOperator = "com.typesafe.akka" %% "akka-stream-testkit"       % Version.AkkaOperator
+  val AkkaHttpOperator          = "com.typesafe.akka" %% "akka-http"                 % Version.AkkaHttpOperator
 
   val AkkaCluster           = "com.typesafe.akka"     %% "akka-cluster"              % Version.Akka
   val AkkaManagement        = "com.lightbend.akka.management" %% "akka-management"   % Version.AkkaMgmt
@@ -46,13 +51,13 @@ object Library {
   val Logback               = "ch.qos.logback"         % "logback-classic"          % "1.2.3"
   val Slf4jLog4jBridge      = "org.slf4j"              % "slf4j-log4j12"            % "1.7.30"            
 
-  val SprayJson              = "io.spray"              %% "spray-json"               % "1.3.5"
-  val Bijection              = "com.twitter"           %% "bijection-avro"           % "0.9.6"
+  val SprayJson             = "io.spray"              %% "spray-json"               % "1.3.5"
+  val Bijection             = "com.twitter"           %% "bijection-avro"           % "0.9.6"
 
-  val JacksonScalaModule     = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.10.4"
+  val JacksonScalaModule    = "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.10.4"
 
-  val Skuber                 = ("io.skuber"             %% "skuber"                   % "2.4.0") .exclude("com.fasterxml.jackson.core","jackson-databind")
-
+  val Skuber                = "io.skuber"                  %% "skuber"               % "2.4.1-cve-fix-a8d7617c"
+  
   val Spark                 = "org.apache.spark"           %% "spark-core"           % Version.Spark
   val SparkJacksonDatabind  = "com.fasterxml.jackson.core"  % "jackson-databind"     % "2.6.7.3"
   val SparkMllib            = "org.apache.spark"           %% "spark-mllib"          % Version.Spark

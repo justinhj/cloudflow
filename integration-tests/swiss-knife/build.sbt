@@ -5,10 +5,6 @@ lazy val swissKnife = (project in file("."))
     .enablePlugins(ScalafmtPlugin)
     .settings(
       scalafmtOnCompile := true,
-      libraryDependencies ++= Seq(
-	      "ch.qos.logback"     %  "logback-classic"        % "1.2.3",
-        "org.scalatest"      %% "scalatest"              % "3.0.8" % "test"
-      ),
       organization := "com.lightbend.cloudflow",
       headerLicense := Some(HeaderLicense.ALv2("(C) 2016-2020", "Lightbend Inc. <https://www.lightbend.com>"))
     )
@@ -18,8 +14,7 @@ lazy val swissKnife = (project in file("."))
       datamodel,
       flink,
       akka,
-      spark
-      
+      spark      
     )
 lazy val app = (project in file("./app"))
   .settings(
@@ -40,7 +35,10 @@ lazy val akka = (project in file("./akka"))
   .enablePlugins(CloudflowAkkaPlugin)
   .settings(commonSettings)
   .settings(
-    name := "swiss-knife-akka"
+    name := "swiss-knife-akka",
+    libraryDependencies ++= Seq(
+      "ch.qos.logback" % "logback-classic" % "1.2.3",
+    )
   )
   .dependsOn(datamodel)
 

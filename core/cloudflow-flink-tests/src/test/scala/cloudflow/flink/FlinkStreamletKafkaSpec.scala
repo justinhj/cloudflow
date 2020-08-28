@@ -32,7 +32,7 @@ import org.scalatest._
  */
 class FlinkStreamletKafkaSpec extends FlinkTestkit with WordSpecLike with Matchers with BeforeAndAfterAll {
 
-  "FlinkIngress" ignore {
+  "FlinkIngress" should /*ignore*/ {
     "write streaming data from a source" in {
       @transient lazy val env = StreamExecutionEnvironment.getExecutionEnvironment
       configureCheckpoint(env)

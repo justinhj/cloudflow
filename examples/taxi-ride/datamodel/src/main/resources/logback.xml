@@ -1,7 +1,12 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
+<<<<<<< HEAD
   <logger name="akka" level="WARN" />
   <logger name="org.apache" level="DEBUG" />
+=======
+  <logger name="akka" level="INFO" />
+  <logger name="org.apache" level="WARN" />
+>>>>>>> b280d35884ea3dd21cba8f99c5b9d00f19afd2f2
   <logger name="kafka" level="WARN" />
   <logger name="org.spark_project.jetty" level="WARN" />
 

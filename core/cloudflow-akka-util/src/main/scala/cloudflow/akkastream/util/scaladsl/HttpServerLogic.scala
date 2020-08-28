@@ -96,9 +96,9 @@ object HttpServerLogic {
 }
 
 /**
- * [[ServerStreamletLogic]] for accepting HTTP requests.
+ * [[cloudflow.akkastream.ServerStreamletLogic]] for accepting HTTP requests.
  * The HttpServerLogic requires a `Server` to be passed in when it is created. You need to pass in a Server to create it
- * [[AkkaServerStreamlet]] extends [[Server]], which can be used for this purpose.
+ * [[cloudflow.akkastream.AkkaServerStreamlet]] extends [[cloudflow.akkastream.Server]], which can be used for this purpose.
  * When you define the logic inside the streamlet, you can just pass in `this`:
  * {{{
  *  import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport._
@@ -137,22 +137,21 @@ abstract class HttpServerLogic(
    */
   def route(): Route
 
-  protected def flow = Route.handlerFlow(route())
-
   def run() =
     startServer(
       context,
-      flow,
+      route(),
       containerPort
     )
 
   protected def startServer(
       context: AkkaStreamletContext,
-      handler: Flow[HttpRequest, HttpResponse, _],
+      route: Route,
       port: Int
   ): Unit =
     Http()
-      .bindAndHandle(handler, "0.0.0.0", port)
+      .newServerAt("0.0.0.0", port)
+      .bind(route)
       .map { binding ⇒
         context.signalReady()
         system.log.info(s"Bound to ${binding.localAddress.getHostName}:${binding.localAddress.getPort}")

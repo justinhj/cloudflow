@@ -17,13 +17,15 @@
 package cloudflow.akkastream
 
 import scala.concurrent.Future
-
 import akka.NotUsed
 import akka.actor.ActorSystem
+import akka.cluster.sharding.typed.scaladsl.Entity
 import akka.kafka.ConsumerMessage.{ Committable, CommittableOffset }
 import akka.kafka.CommitterSettings
 import akka.stream.scaladsl._
 import cloudflow.streamlets._
+
+import scala.concurrent.duration.{ DurationInt, FiniteDuration }
 
 /**
  * Runtime context for [[AkkaStreamlet]]s, which provides means to create [[akka.stream.scaladsl.Source Source]]s and [[akka.stream.scaladsl.Sink Sink]]s respectively
@@ -38,11 +40,23 @@ trait AkkaStreamletContext extends StreamletContext {
       inlet: CodecInlet[T]
   ): cloudflow.akkastream.scaladsl.SourceWithCommittableContext[T]
 
+  private[akkastream] def shardedSourceWithCommittableContext[T, M, E](
+      inlet: CodecInlet[T],
+      shardEntity: Entity[M, E],
+      kafkaTimeout: FiniteDuration = 10.seconds
+  ): SourceWithContext[T, CommittableOffset, Future[NotUsed]]
+
   @deprecated("Use `sourceWithCommittableContext` instead.", "1.3.4")
   private[akkastream] def sourceWithOffsetContext[T](inlet: CodecInlet[T]): cloudflow.akkastream.scaladsl.SourceWithOffsetContext[T]
 
   private[akkastream] def plainSource[T](inlet: CodecInlet[T], resetPosition: ResetPosition): Source[T, NotUsed]
   private[akkastream] def plainSink[T](outlet: CodecOutlet[T]): Sink[T, NotUsed]
+  private[akkastream] def shardedPlainSource[T, M, E](
+      inlet: CodecInlet[T],
+      shardEntity: Entity[M, E],
+      resetPosition: ResetPosition = Latest,
+      kafkaTimeout: FiniteDuration = 10.seconds
+  ): Source[T, Future[NotUsed]]
 
   private[akkastream] def committableSink[T](outlet: CodecOutlet[T], committerSettings: CommitterSettings): Sink[(T, Committable), NotUsed]
   private[akkastream] def committableSink[T](committerSettings: CommitterSettings): Sink[(T, Committable), NotUsed]
@@ -71,10 +85,10 @@ trait AkkaStreamletContext extends StreamletContext {
   /**
    * Signals that the streamlet is ready to process data.
    *
-   * When a streamlet is run using `AkkaStreamletTestkit.run`, a [[cloudflow.akkastream.StreamletExecution StreamletExecution]] is returned.
-   * `signalReady` completes the [[cloudflow.akkastream.StreamletExecution.ready ready]] future.
-   * [[cloudflow.akkastream.StreamletExecution.ready ready]] can be used for instance to wait
-   * for a [[cloudflow.akkastream.Server Server]] streamlet to signal that it is ready to accept requests.
+   * When a streamlet is run using `AkkaStreamletTestkit.run`, a [[cloudflow.streamlets.StreamletExecution StreamletExecution]] is returned.
+   * `signalReady` completes the [[cloudflow.streamlets.StreamletExecution#ready ready]] future.
+   * [[cloudflow.streamlets.StreamletExecution#ready ready]] can be used for instance to wait
+   * for a [[cloudflow.akkastream.Server Server]] to signal that it is ready to accept requests.
    *
    * @return {@code true} if and only if successfully signalled. Otherwise {@code false}.
    */

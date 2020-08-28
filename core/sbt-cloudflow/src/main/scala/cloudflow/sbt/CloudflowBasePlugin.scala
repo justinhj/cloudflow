@@ -38,7 +38,7 @@ object CloudflowBasePlugin extends AutoPlugin {
   final val DepJarsDir: String               = "dep-jars"
   final val OptAppDir                        = "/opt/cloudflow/"
   final val ScalaVersion                     = "2.12"
-  final val CloudflowVersion                 = "2.0.7"
+  final val CloudflowVersion                 = "2.0.9"
 
   // NOTE !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
   // The UID and GID of the `jboss` user is used in different parts of Cloudflow
@@ -50,6 +50,8 @@ object CloudflowBasePlugin extends AutoPlugin {
 
   override def requires =
     StreamletDescriptorsPlugin && JavaAppPackaging && sbtdocker.DockerPlugin
+
+  import ImageNameExtensions._
 
   override def projectSettings = Seq(
     libraryDependencies ++= Vector(
@@ -94,17 +96,16 @@ object CloudflowBasePlugin extends AutoPlugin {
     buildAndPublishImage := Def.task {
           val _ = (checkUncommittedChanges.value, verifyDockerRegistry.value)
           Def.task {
-            val streamletDescriptors = streamletDescriptorsInProject.value
-            val imageId: ImageId     = dockerBuildAndPush.value
-            val log                  = streams.value.log
-            val imagesPushed         = (imageNames in docker).value
-            if (imagesPushed.size > 1) throw TooManyImagesBuilt
-            val imagePushed = imagesPushed.head
+            val streamletDescriptors                           = streamletDescriptorsInProject.value
+            val imageNameToDigest: Map[ImageName, ImageDigest] = dockerBuildAndPush.value
+            val log                                            = streams.value.log
+            if (imageNameToDigest.size > 1) throw TooManyImagesBuilt
+            val (imageName, imageDigest) = imageNameToDigest.head
 
             log.info(" ") // if you remove the space, the empty line will be auto-removed by SBT somehow...
             log.info("Successfully built and published the following image:")
-            log.info(s"  $imagePushed")
-            ImageNameAndId(imagePushed, imageId) -> streamletDescriptors
+            log.info(imageName.referenceWithDigest(imageDigest))
+            ImageNameAndDigest(imageName, imageDigest) -> streamletDescriptors
           }.value
         }.value,
     fork in Compile := true,
@@ -167,4 +168,4 @@ object TooManyImagesBuiltError {
     """.stripMargin
 }
 
-final case class ImageNameAndId(imageName: ImageName, imageId: ImageId)
+final case class ImageNameAndDigest(imageName: ImageName, imageId: ImageDigest)
