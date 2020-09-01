@@ -9,11 +9,10 @@ val javadocDisabledFor = Set(
   "/cloudflow-streamlets/target/java/cloudflow/streamlets/RegExpConfigParameter$.java",
   "/cloudflow-streamlets/target/java/cloudflow/streamlets/DurationConfigParameter$.java",
   "/cloudflow-streamlets/target/java/cloudflow/streamlets/MemorySizeConfigParameter$.java",
-
   // '@throws' in scaladoc but there is now 'throws' clause on the method
   "/cloudflow-streamlets/target/java/cloudflow/streamlets/StreamletContext.java",
   "/cloudflow-akka/target/java/cloudflow/akkastream/AkkaStreamletLogic.java",
-  "/cloudflow-spark/target/java/cloudflow/spark/SparkStreamletLogic.java",
+  "/cloudflow-spark/target/java/cloudflow/spark/SparkStreamletLogic.java"
 )
 
 lazy val root =
@@ -123,6 +122,8 @@ lazy val akkastreamUtil =
       libraryDependencies ++= Vector(
             AkkaHttp,
             AkkaHttpJackson,
+            AkkaHttp2Support,
+            AkkaGrpcRuntime,
             AkkaStreamContrib,
             AkkaHttpTestkit,
             AkkaStreamTestkit,
@@ -196,6 +197,9 @@ lazy val spark =
       dependencyOverrides += SparkJacksonDatabind,
       libraryDependencies ++= Seq(
             AkkaActor,
+            AkkaDiscovery,
+            AkkaProtobuf,
+            AkkaStream,
             Ficus,
             Spark,
             SparkMllib,
@@ -332,13 +336,13 @@ lazy val plugin =
       crossSbtVersions := Vector("1.2.8"),
       buildInfoKeys := Seq[BuildInfoKey](version),
       buildInfoPackage := "cloudflow.sbt",
-      addSbtPlugin("se.marcuslonnberg" % "sbt-docker"          % "1.8.0"),
-      addSbtPlugin("com.typesafe.sbt"  % "sbt-native-packager" % "1.3.25"),
-      addSbtPlugin("com.cavorite"      % "sbt-avro-1-8"        % "1.1.9"),
-      addSbtPlugin("com.thesamet"      % "sbt-protoc"          % "0.99.31"),
-      addSbtPlugin("com.julianpeeters" % "sbt-avrohugger"      % "2.0.0-RC18"),
-      addSbtPlugin("com.lightbend.sbt" % "sbt-javaagent"       % "0.1.5"),
-      addSbtPlugin("de.heikoseeberger" % "sbt-header"          % "5.2.0"),
+      addSbtPlugin("se.marcuslonnberg"       % "sbt-docker"          % "1.8.0"),
+      addSbtPlugin("com.typesafe.sbt"        % "sbt-native-packager" % "1.3.25"),
+      addSbtPlugin("com.cavorite"            % "sbt-avro-1-8"        % "1.1.9"),
+      addSbtPlugin("com.lightbend.akka.grpc" % "sbt-akka-grpc"       % Version.AkkaGrpc),
+      addSbtPlugin("com.julianpeeters"       % "sbt-avrohugger"      % "2.0.0-RC18"),
+      addSbtPlugin("com.lightbend.sbt"       % "sbt-javaagent"       % "0.1.5"),
+      addSbtPlugin("de.heikoseeberger"       % "sbt-header"          % "5.2.0"),
       libraryDependencies ++= Vector(
             FastClasspathScanner,
             ScalaPbCompilerPlugin,
@@ -548,6 +552,22 @@ lazy val commonSettings = bintraySettings ++ Seq(
               "-language:_",
               "-unchecked"
             ),
+        Compile / doc / scalacOptions := (Compile / doc / scalacOptions).value ++ Seq(
+                  "-doc-title",
+                  "Cloudflow",
+                  "-doc-version",
+                  version.value,
+                  "-sourcepath",
+                  (baseDirectory in ThisBuild).value.toString,
+                  "-skip-packages",
+                  "akka.pattern:scala", // for some reason Scaladoc creates this
+                  "-doc-source-url", {
+                    val branch = if (isSnapshot.value) "master" else s"v${version.value}"
+                    s"https://github.com/lightbend/cloudflow/tree/${branch}€{FILE_PATH_EXT}#L€{FILE_LINE}"
+                  },
+                  "-doc-canonical-base-url",
+                  "https://cloudflow.io/docs/current/api/scaladoc/"
+                ),
         resolvers += Resolver.url("cloudflow", url("https://lightbend.bintray.com/cloudflow"))(Resolver.ivyStylePatterns),
         resolvers += "Akka Snapshots".at("https://repo.akka.io/snapshots/"),
         scalacOptions in (Compile, console) := (scalacOptions in (Global)).value.filter(_ == "-Ywarn-unused-import"),
