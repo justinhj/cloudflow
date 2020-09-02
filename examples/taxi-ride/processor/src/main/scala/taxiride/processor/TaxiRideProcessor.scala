@@ -43,8 +43,11 @@ import taxiride.datamodel._
 import cloudflow.flink._
 import java.io.FileOutputStream
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
+import org.slf4j.LoggerFactory
 
 class TaxiRideProcessor extends FlinkStreamlet {
+
+  val logger = LoggerFactory.getLogger("TaxiRideProcessor")
 
   // Step 1: Define inlets and outlets. Note for the outlet you need to specify
   //         the partitioner function explicitly : here we are using the
@@ -116,7 +119,9 @@ class TaxiRideProcessor extends FlinkStreamlet {
       if (fare != null) {
         fareState.clear()
         out.collect(new TaxiRideFare(ride.rideId, fare.totalFare))
+        logger.error(s"collect ${ride.rideId} ${fare.totalFare}")
       } else {
+        logger.error(s"update ${ride.rideId} ${fare.totalFare}")
         rideState.update(ride)
       }
     }
