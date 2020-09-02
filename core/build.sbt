@@ -259,6 +259,7 @@ lazy val flink =
             FlinkKafka,
             FlinkAvro,
             FlinkAzure,
+            FlinkWeb,
             ScalaTest
           ),
       libraryDependencies ~= { _.map(_.exclude("org.slf4j", "slf4j-log4j12")) }

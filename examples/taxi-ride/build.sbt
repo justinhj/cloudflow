@@ -26,7 +26,8 @@ lazy val taxiRidePipeline = appModule("taxi-ride-pipeline")
   .enablePlugins(CloudflowApplicationPlugin)
   .settings(commonSettings)
   .settings(
-    name := "taxi-ride-fare"
+    name := "taxi-ride-fare",
+    runLocalConfigFile := Some("taxi-ride-pipeline/src/main/resources/local.conf"),
   )
   .settings(
       runLocalConfigFile := Some("processor/src/main/resources/azuretest.conf")

@@ -79,7 +79,7 @@ object Library {
   val FlinkAvro              = "org.apache.flink"       % "flink-avro"               % Version.Flink
   val FlinkKafka             = "org.apache.flink"      %% "flink-connector-kafka"    % Version.Flink
   val FlinkAzure             = "org.apache.flink"       % "flink-azure-fs-hadoop"    % "1.11.1"
-
+  val FlinkWeb               = "org.apache.flink"      %% "flink-runtime-web"        % Version.Flink
   val FastClasspathScanner  = "io.github.lukehutch"   %  "fast-classpath-scanner"   % "2.21"
   val ScalaCheck            = "org.scalacheck"        %% "scalacheck"               % "1.14.0"
   val Avro4sJson            = "com.sksamuel.avro4s"   %% "avro4s-json"              % "3.0.0"
