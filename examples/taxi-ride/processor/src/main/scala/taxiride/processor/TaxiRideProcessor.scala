@@ -60,22 +60,22 @@ class TaxiRideProcessor extends FlinkStreamlet {
   //         has 2 inlets and 1 outlet
   @transient val shape = StreamletShape.withInlets(inTaxiRide, inTaxiFare).withOutlets(out)
 
-  override def createExecutionEnvironment: StreamExecutionEnvironment = {
-    // val enabled = StreamExecutionEnvironment.getExecutionEnvironment.getJavaEnv.isChainingEnabled()
-    // val mode = StreamExecutionEnvironment.getExecutionEnvironment.getCheckpointingMode.toString()
-    // val out = new FileOutputStream("/tmp/debugconfig.txt")
+  // override def createExecutionEnvironment: StreamExecutionEnvironment = {
+  //   // val enabled = StreamExecutionEnvironment.getExecutionEnvironment.getJavaEnv.isChainingEnabled()
+  //   // val mode = StreamExecutionEnvironment.getExecutionEnvironment.getCheckpointingMode.toString()
+  //   // val out = new FileOutputStream("/tmp/debugconfig.txt")
 
-    // //val backend = StreamExecutionEnvironment.getExecutionEnvironment.getStateBackend.toString()
+  //   // //val backend = StreamExecutionEnvironment.getExecutionEnvironment.getStateBackend.toString()
 
-    // out.write(s"is checkpoint enabled? $enabled mode $mode".getBytes())
-    // out.close
+  //   // out.write(s"is checkpoint enabled? $enabled mode $mode".getBytes())
+  //   // out.close
 
-    //StreamExecutionEnvironment.getExecutionEnvironment.setStateBackend(new FsStateBackend("wasbs://checkpoints@heyesjonescom1.blob.core.windows.net/flinkcps"))
+  //   //StreamExecutionEnvironment.getExecutionEnvironment.setStateBackend(new FsStateBackend("wasbs://checkpoints@heyesjonescom1.blob.core.windows.net/flinkcps"))
 
-    StreamExecutionEnvironment.getExecutionEnvironment.setStateBackend(new FsStateBackend("file:///tmp/flinkcpscloudflow"))
+  //   StreamExecutionEnvironment.getExecutionEnvironment.setStateBackend(new FsStateBackend("file:///tmp/flinkcpscloudflow"))
 
-    super.createExecutionEnvironment
-  }
+  //   super.createExecutionEnvironment
+  // }
 
   // Step 3: Provide custom implementation of `FlinkStreamletLogic` that defines
   //         the behavior of the streamlet
