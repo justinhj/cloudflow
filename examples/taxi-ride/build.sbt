@@ -2,7 +2,14 @@ import sbt._
 import sbt.Keys._
 import cloudflow.sbt.CommonSettingsAndTasksPlugin._
 
-libraryDependencies += "org.apache.flink" % "flink-azure-fs-hadoop" % "1.11.1"
+import
+
+libraryDependencies += "org.apache.flink" % "flink-azure-fs-hadoop" % cloudflow.sbt.CloudflowFlinkPlugin.FlinkVersion
+
+val showFlinkVersion = taskKey[Unit]("Display Cloudflow's Flink version.")
+showFlinkVersion := {
+  println(s"Flink version: ${cloudflow.sbt.CloudflowFlinkPlugin.FlinkVersion}")
+}
 
 lazy val root =
   Project(id = "root", base = file("."))
@@ -21,6 +28,14 @@ lazy val root =
       processor,
       ridelogger
     )
+
+
+lazy val testSettings = Seq(
+  libraryDependencies ++= Seq(
+      "ch.qos.logback"         %  "logback-classic"        % "1.2.3",
+      "org.scalatest"          %% "scalatest"              % "3.0.8"    % "test"
+  )
+)
 
 lazy val taxiRidePipeline = appModule("taxi-ride-pipeline")
   .enablePlugins(CloudflowApplicationPlugin)
@@ -77,12 +92,9 @@ lazy val processor = appModule("processor")
 lazy val ridelogger = appModule("logger")
   .enablePlugins(CloudflowAkkaPlugin)
   .settings(
-    commonSettings,
-    libraryDependencies ++= Seq(
-      "ch.qos.logback"         %  "logback-classic"        % "1.2.3",
-      "org.scalatest"          %% "scalatest"              % "3.0.8"    % "test"
-    )
+    commonSettings
   )
+  .settings(testSettings)
   .dependsOn(datamodel)
 
 def appModule(moduleID: String): Project = {

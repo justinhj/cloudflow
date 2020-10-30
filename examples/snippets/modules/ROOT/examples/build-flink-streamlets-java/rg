@@ -1,0 +1,81 @@
+[info] Loading global plugins from /Users/justinhj/.sbt/1.0/plugins
+[info] Loading settings for project build-flink-streamlets-java-build from cloudflow-plugins.sbt ...
+[info] Loading project definition from /Users/justinhj/cloudflow/examples/snippets/modules/ROOT/examples/build-flink-streamlets-java/project
+[info] Loading settings for project root from build.sbt ...
+[info] Set current project to root (in build file:/Users/justinhj/cloudflow/examples/snippets/modules/ROOT/examples/build-flink-streamlets-java/)
+[error] Streamlet 'com.example.ReportPrinter' could not be introspected. Its descriptor method threw an exception: null
+[error] Streamlet 'com.example.ReportPrinter' could not be introspected. Its descriptor method threw an exception: null
+[info] Streamlet 'com.example.ReportPrinter' found
+[info] Streamlet 'com.example.FlinkProcessor' found
+[info] Streamlet 'com.example.ReportIngress' found
+[info] Streamlet 'com.example.ReportPrinter' found
+[info] Streamlet 'com.example.FlinkProcessor' found
+[info] Streamlet 'com.example.ReportIngress' found
+[info] Streamlet 'com.example.ReportPrinter' found
+[success] /Users/justinhj/cloudflow/examples/snippets/modules/ROOT/examples/build-flink-streamlets-java/app/src/main/blueprint/blueprint.conf verified.
+    ┌───────┐    
+    │ingress│    
+    └───┬───┘    
+        │        
+        v        
+   ┌─────────┐   
+   │[reports]│   
+   └─────┬───┘   
+         │       
+         v       
+ ┌──────────────┐
+ │report-printer│
+ └──────────────┘
+---------------------------- Streamlets per project ----------------------------
+step2 - output file: file:/var/folders/4r/qpj2wr4x44zcvgd154ld81w80000gn/T/cloudflow-local-run7330530186095829427/step2-local.log
+
+	report-printer [com.example.ReportPrinter]
+
+app - output file: file:/var/folders/4r/qpj2wr4x44zcvgd154ld81w80000gn/T/cloudflow-local-run7330530186095829427/app-local.log
+
+	ingress [com.example.ReportIngress]
+	report-printer [com.example.ReportPrinter]
+
+step3 - output file: file:/var/folders/4r/qpj2wr4x44zcvgd154ld81w80000gn/T/cloudflow-local-run7330530186095829427/step3-local.log
+
+	ingress [com.example.ReportIngress]
+	report-printer [com.example.ReportPrinter]
+
+--------------------------------------------------------------------------------
+
+------------------------------------ Topics ------------------------------------
+[reports]
+--------------------------------------------------------------------------------
+
+----------------------------- Local Configuration -----------------------------
+No configuration file provided for the local runner.
+Set `runLocalConfigFile` in your build.sbt to point to the location of your local config file
+--------------------------------------------------------------------------------
+
+------------------------------------ Output ------------------------------------
+Pipeline log output available in folder: /var/folders/4r/qpj2wr4x44zcvgd154ld81w80000gn/T/cloudflow-local-run7330530186095829427
+--------------------------------------------------------------------------------
+
+Running app  
+To terminate, press [ENTER]
+
+[error] java.lang.UnsupportedOperationException: Not Implemented
+[error] 	at com.example.ReportPrinter.createLogic(ReportPrinter.java:17)
+[error] 	at cloudflow.flink.FlinkStreamlet$LocalFlinkJobExecutor$.$anonfun$execute$1(FlinkStreamlet.scala:231)
+[error] 	at scala.concurrent.Future$.$anonfun$apply$1(Future.scala:659)
+[error] 	at scala.util.Success.$anonfun$map$1(Try.scala:255)
+[error] 	at scala.util.Success.map(Try.scala:213)
+[error] 	at scala.concurrent.Future.$anonfun$map$1(Future.scala:292)
+[error] 	at scala.concurrent.impl.Promise.liftedTree1$1(Promise.scala:33)
+[error] 	at scala.concurrent.impl.Promise.$anonfun$transform$1(Promise.scala:33)
+[error] 	at scala.concurrent.impl.CallbackRunnable.run(Promise.scala:64)
+[error] 	at java.util.concurrent.ForkJoinTask$RunnableExecuteAction.exec(ForkJoinTask.java:1402)
+[error] 	at java.util.concurrent.ForkJoinTask.doExec(ForkJoinTask.java:289)
+[error] 	at java.util.concurrent.ForkJoinPool$WorkQueue.runTask(ForkJoinPool.java:1056)
+[error] 	at java.util.concurrent.ForkJoinPool.runWorker(ForkJoinPool.java:1692)
+[error] 	at java.util.concurrent.ForkJoinWorkerThread.run(ForkJoinWorkerThread.java:157)
+
+[info] Attempting to terminate local application
+
+[warn] Canceling execution...
+[error] Total time: 178320 s (49:32:00), completed 7-Oct-2020 4:40:30 PM

@@ -41,8 +41,7 @@ lazy val step3 = appModule("step3")
     .enablePlugins(CloudflowFlinkPlugin)
     .settings(
       Test / parallelExecution := false,
-      Test / fork := true
-    )
+      Test / fork := true)
 
 lazy val app = appModule("app")
     .enablePlugins(CloudflowApplicationPlugin)
@@ -75,6 +74,7 @@ lazy val commonSettings = Seq(
   scalacOptions in (Test, console) := (scalacOptions in (Compile, console)).value,
 
   libraryDependencies ++= Seq(
+        "org.slf4j"              % "slf4j-log4j12"             % "1.7.30",
         "org.scalatest"          %% "scalatest"                 % "3.0.8"    % "test",
         "junit"                  % "junit"                      % "4.12"     % "test"),
 

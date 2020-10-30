@@ -44,10 +44,11 @@ import cloudflow.flink._
 import java.io.FileOutputStream
 import org.apache.flink.runtime.state.filesystem.FsStateBackend
 import org.slf4j.LoggerFactory
+import org.slf4j.Logger
 
 class TaxiRideProcessor extends FlinkStreamlet {
 
-  val logger = LoggerFactory.getLogger("TaxiRideProcessor")
+  val logger: Logger = LoggerFactory.getLogger("TaxiRideProcessor")
 
   // Step 1: Define inlets and outlets. Note for the outlet you need to specify
   //         the partitioner function explicitly : here we are using the

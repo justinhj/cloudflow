@@ -2,6 +2,8 @@ package com.example;
 
 //tag::processor[]
 import java.util.List;
+
+import com.typesafe.config.Config;
 import org.apache.flink.streaming.api.datastream.DataStream;
 import org.apache.flink.streaming.api.datastream.DataStreamSink;
 import org.apache.flink.api.common.functions.MapFunction;
@@ -29,6 +31,12 @@ public class FlinkProcessor extends FlinkStreamlet {
   // Step 3: Provide custom implementation of `FlinkStreamletLogic` that defines
   //         the behavior of the streamlet
   @Override public FlinkStreamletLogic createLogic() {
+
+    FlinkStreamletContext context = getContext();
+    Config conf = context.streamletConfig();
+
+    Integer test = conf.getInt("test");
+
     return new FlinkStreamletLogic(getContext()) {
       @Override public void buildExecutionGraph() {
 
